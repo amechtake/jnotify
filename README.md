@@ -34,5 +34,5 @@ there are other positions : <br>
 <code><i><b>NPosition.BOTTOM_LEFT</b></i></code><br>
 <code><i><b>NPosition.BOTTOM_RIGHT</b></i></code><br>
 <code>
-<img src="http://img15.hostingpics.net/thumbs/mini_9268483Id.png" alt="Heberger image" />
+
 </code>
