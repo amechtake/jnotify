@@ -33,6 +33,14 @@ there are other positions : <br>
 <code><i><b>NPosition.TOP_RIGHT</b></i></code><br>
 <code><i><b>NPosition.BOTTOM_LEFT</b></i></code><br>
 <code><i><b>NPosition.BOTTOM_RIGHT</b></i></code><br>
+<br>
+<br>
+Demo
+====
 <code>
-
+  <img width="100%"  src="http://zupimages.net/up/13/49/kn2z.png" alt="Demo jNotify" />
 </code>
+
+Author
+======
+Mohsine AMECHTAK
