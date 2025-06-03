@@ -11,6 +11,12 @@ import java.awt.event.MouseListener;
 import javax.swing.JDialog;
 import javax.swing.Timer;
 
+/**
+ * Represents a notification window that can be displayed on the screen.
+ * This window shows a message with a specific style (type) and can be positioned
+ * at various locations on the screen. It automatically disappears after a configurable delay.
+ * The window also responds to mouse events to pause the disappearance timer when hovered.
+ */
 public class NotifyWindow extends JDialog implements ActionListener,
 		MouseListener, ScreenDimension {
 
@@ -25,28 +31,24 @@ public class NotifyWindow extends JDialog implements ActionListener,
 	// default position of the notification
 	private NPosition position = NPosition.CENTER;
 	// default Type of the notification
-	private Color type = panneau_principal.DEFAULT_NOTIFICATION;
+	private Color type = NotifyType.DEFAULT_NOTIFICATION;
 
 	// display time of notification in milliseconds
+	/** Short delay for notification visibility (1500 milliseconds). */
 	public static final int SHORT_DELAY = 1500;
+	/** Normal delay for notification visibility (2500 milliseconds). */
 	public static final int NORMAL_DELAY = 2500;
+	/** Long delay for notification visibility (4000 milliseconds). */
 	public static final int LONG_DELAY = 4000;
 
 	/**
-	 * Constructor with 4 parameters Type of notification, message, delay,
-	 * position
-	 * 
-	 * @param notification
-	 *            is a color you can get it with NotifyType.DEFAULT_NOTIFICATION
-	 *            for example
-	 * @param message
-	 *            String
-	 * @param delay
-	 *            is a display time of notification
-	 * @param position
-	 *            this is the position you want to display the notification
-	 *            NPosition.CENTER for example
-	 * */
+	 * Constructs a new notification window with specified type, message, delay, and position.
+	 *
+	 * @param notification The color representing the type of notification (e.g., {@link NotifyType#SUCCESS_NOTIFICATION}).
+	 * @param message      The message to be displayed in the notification.
+	 * @param delay        The duration in milliseconds for which the notification will be visible (e.g., {@link #NORMAL_DELAY}).
+	 * @param position     The position on the screen where the notification will appear (e.g., {@link NPosition#TOP_RIGHT}).
+	 */
 	public NotifyWindow(Color notification, String message, int delay,
 			NPosition position) {
 		super();
@@ -55,24 +57,47 @@ public class NotifyWindow extends JDialog implements ActionListener,
 		init(this.type, message, delay, this.position);
 	}
 
-	// an other constructors with different parameters
+	/**
+	 * Constructs a new notification window with specified type, message, and delay, using the default position (CENTER).
+	 *
+	 * @param notification The color representing the type of notification.
+	 * @param message      The message to be displayed.
+	 * @param delay        The duration in milliseconds for visibility.
+	 */
 	public NotifyWindow(Color notification, String message, int delay) {
 		super();
 		this.type = notification;
 		init(this.type, message, delay, this.position);
 	}
 
+	/**
+	 * Constructs a new notification window with specified type and message, using default delay and position.
+	 *
+	 * @param notification The color representing the type of notification.
+	 * @param message      The message to be displayed.
+	 */
 	public NotifyWindow(Color notification, String message) {
 		super();
 		this.type = notification;
 		init(this.type, message, NORMAL_DELAY, this.position);
 	}
 
+	/**
+	 * Constructs a new notification window with a specified message, using default type, delay, and position.
+	 *
+	 * @param message The message to be displayed.
+	 */
 	public NotifyWindow(String message) {
 		super();
 		init(this.type, message, NORMAL_DELAY, this.position);
 	}
 
+	/**
+	 * Constructs a new notification window with a specified message and position, using default type and delay.
+	 *
+	 * @param message  The message to be displayed.
+	 * @param position The position on the screen.
+	 */
 	public NotifyWindow(String message, NPosition position) {
 		super();
 		this.position = position;
@@ -80,10 +105,14 @@ public class NotifyWindow extends JDialog implements ActionListener,
 	}
 
 	/**
-	 * Method that takes as parameters the constructor parameters initializes
-	 * the components of the notification
-	 * */
-
+	 * Initializes the notification window's components and appearance.
+	 * Sets up the size, opacity, location, content pane, and timers.
+	 *
+	 * @param notiColor The color for the notification type.
+	 * @param message   The message text.
+	 * @param delay     The display duration.
+	 * @param position  The screen position.
+	 */
 	private void init(Color notiColor, String message, int delay,
 			NPosition position) {
 		panneau_principal = new NotifyType(notiColor, message);
@@ -105,18 +134,32 @@ public class NotifyWindow extends JDialog implements ActionListener,
 		this.timerPrint.start();
 	}
 	
+	/**
+	 * Gets the current screen position of the notification window.
+	 *
+	 * @return The {@link NPosition} enum constant representing the current position.
+	 */
 	public NPosition getPosition() {
 		return position;
 	}
 
+	/**
+	 * Sets the screen position for the notification window.
+	 * Note: This method might not dynamically update the position if called after the window is visible.
+	 * It's primarily used for internal state management before initialization.
+	 *
+	 * @param position The {@link NPosition} enum constant to set as the new position.
+	 */
 	public void setPosition(NPosition position) {
 		this.position = position;
 	}
 	
 	/**
-	 * Méthod to clear the Insets
-	 * @params position
-	 * */
+	 * Adjusts the static inset values when a notification at a specific corner is closed.
+	 * This is intended to allow subsequent notifications in the same corner to stack correctly.
+	 *
+	 * @param position The {@link NPosition} of the window that was closed.
+	 */
 	public void clear(NPosition position) {
 		if (position == NPosition.TOP_LEFT) {
 			topLeftInsets.y = topLeftInsets.y - this.getHeight() - blocSpacing; 
@@ -128,6 +171,15 @@ public class NotifyWindow extends JDialog implements ActionListener,
 			bottomRightInsets.y = bottomRightInsets.y - this.getHeight() - blocSpacing;
 		}
 	}
+
+	/**
+	 * Handles action events, primarily from the internal timers.
+	 * When {@code timerPrint} fires, it starts {@code timerExit}.
+	 * When {@code timerExit} fires, it gradually fades out the notification window
+	 * and then disposes of it, clearing its position from the insets.
+	 *
+	 * @param e The ActionEvent object.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// launched timers exit
@@ -149,14 +201,28 @@ public class NotifyWindow extends JDialog implements ActionListener,
 	}
 
 
+	/**
+	 * Invoked when the mouse button has been clicked (pressed and released) on the notification window.
+	 * Currently, this method has no specific action implemented.
+	 *
+	 * @param e The MouseEvent object.
+	 */
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 	}
 
+	/**
+	 * Invoked when the mouse enters the notification window.
+	 * If the exit timer ({@code timerExit}) is running (meaning the window is fading out),
+	 * this method stops the exit timer, restarts the print timer ({@code timerPrint})
+	 * to keep the notification visible, and resets the opacity to full (0.9).
+	 * This allows the user to hover over the notification to prevent it from disappearing.
+	 *
+	 * @param e The MouseEvent object.
+	 */
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
 		// check that the cursor is on the notification at the exit timer is
 		// started
 		if (timerExit.isRunning()) {
@@ -169,21 +235,48 @@ public class NotifyWindow extends JDialog implements ActionListener,
 
 	}
 
+	/**
+	 * Invoked when the mouse exits the notification window.
+	 * Currently, this method has no specific action implemented.
+	 *
+	 * @param e The MouseEvent object.
+	 */
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 	}
 
+	/**
+	 * Invoked when a mouse button has been pressed on the notification window.
+	 * Currently, this method has no specific action implemented.
+	 *
+	 * @param e The MouseEvent object.
+	 */
 	@Override
 	public void mousePressed(MouseEvent e) {
 
 	}
 
+	/**
+	 * Invoked when a mouse button has been released on the notification window.
+	 * Currently, this method has no specific action implemented.
+	 *
+	 * @param e The MouseEvent object.
+	 */
 	@Override
 	public void mouseReleased(MouseEvent e) {
 
 	}
 
+	/**
+	 * Gets the current location of this notification window.
+	 * This method is part of the {@link ScreenDimension} interface implementation,
+	 * though it directly returns the window's current location rather than calculating
+	 * a new position based on the input dialog (which is itself in this case).
+	 *
+	 * @param window The JDialog window (expected to be this instance).
+	 * @return A Point object representing the current (x, y) screen coordinates of this notification window.
+	 */
 	@Override
 	public Point getPosition(JDialog window) {
 		return this.getLocation();
